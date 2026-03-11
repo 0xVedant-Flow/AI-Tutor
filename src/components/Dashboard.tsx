@@ -1,0 +1,205 @@
+import React from 'react';
+import { 
+  MessageSquare, 
+  BookOpen, 
+  Calendar, 
+  ArrowRight, 
+  FileText, 
+  Calculator, 
+  Beaker,
+  CheckCircle2,
+  Clock,
+  ChevronRight
+} from 'lucide-react';
+import { View } from '../types';
+
+export default function Dashboard({ setView }: { setView: (v: View) => void }) {
+  const today = new Date('2026-03-10');
+  const dateString = today.toLocaleDateString('en-BD', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+
+  return (
+    <div className="space-y-8">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600">Real-time Active</span>
+          </div>
+          <h2 className="text-3xl font-black tracking-tight">Welcome back, Tarikul! 👋</h2>
+          <p className="text-slate-500 mt-1">{dateString}</p>
+        </div>
+        <div className="bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+          <Clock size={18} className="text-blue-600" />
+          <div>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Current Session</p>
+            <p className="text-sm font-black text-slate-900">01:24:45</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Widgets */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+        <ActionCard 
+          icon={<MessageSquare size={28} />} 
+          title="Ask AI" 
+          desc="Get instant explanations for complex theories and math problems." 
+          color="blue"
+          onClick={() => setView('chat')}
+        />
+        <ActionCard 
+          icon={<BookOpen size={28} />} 
+          title="Practice MCQ" 
+          desc="Generate custom mock tests based on your syllabus and previous years." 
+          color="emerald"
+          onClick={() => setView('mcq')}
+        />
+        <ActionCard 
+          icon={<Calendar size={28} />} 
+          title="Study Plan" 
+          desc="Let AI analyze your progress and create a daily roadmap for exams." 
+          color="amber"
+          onClick={() => setView('plan')}
+        />
+      </div>
+
+      {/* Recent Activity & Stats */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Recent Questions */}
+        <div className="lg:col-span-2 space-y-4 order-2 lg:order-1">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-bold text-xl">Recent Questions</h3>
+            <button onClick={() => setView('history')} className="text-sm text-blue-600 font-medium hover:underline">View All</button>
+          </div>
+          <div className="space-y-3">
+            <RecentItem 
+              icon={<FileText size={20} />} 
+              title="Explain the working principle of a Transformer." 
+              meta="Physics • HSC Syllabus • 2 hours ago" 
+              tag="Physics"
+              tagColor="blue"
+            />
+            <RecentItem 
+              icon={<Calculator size={20} />} 
+              title="Solve: If sin(A+B) = 1 and cos(A-B) = √3/2, find A and B." 
+              meta="Math • Trigonometry • Yesterday" 
+              tag="Math"
+              tagColor="amber"
+            />
+            <RecentItem 
+              icon={<Beaker size={20} />} 
+              title="Differences between Mitosis and Meiosis cell division." 
+              meta="Biology • SSC Syllabus • 3 days ago" 
+              tag="Biology"
+              tagColor="emerald"
+            />
+          </div>
+        </div>
+
+        {/* Side Stats */}
+        <div className="space-y-6 order-1 lg:order-2">
+          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+            <h3 className="font-bold text-lg mb-4">Exam Countdown</h3>
+            <div className="flex justify-between items-center bg-slate-50 p-4 rounded-lg">
+              <div>
+                <p className="text-xs text-slate-500 uppercase font-bold tracking-widest">Physics 1st Paper</p>
+                <p className="text-2xl font-black text-slate-900">12 Days</p>
+              </div>
+              <div className="size-12 rounded-full border-4 border-blue-600 border-t-transparent flex items-center justify-center text-[10px] font-bold">
+                75%
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-blue-600 p-6 rounded-xl text-white overflow-hidden relative shadow-lg shadow-blue-100">
+            <div className="relative z-10">
+              <h3 className="font-bold text-lg leading-tight mb-2">Generate Mock Test</h3>
+              <p className="text-white/80 text-xs mb-4">Practice with real exam-like MCQ questions generated by AI.</p>
+              <button onClick={() => setView('mcq')} className="bg-white text-blue-600 text-xs font-bold px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors">
+                Start Now
+              </button>
+            </div>
+            <BookOpen className="absolute -right-4 -bottom-4 size-32 opacity-10" />
+          </div>
+
+          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+            <h3 className="font-bold text-lg mb-4">Daily Goal</h3>
+            <div className="space-y-3">
+              <GoalItem text="Complete 20 MCQs" done />
+              <GoalItem text="Ask AI about Gauss's Law" />
+              <GoalItem text="Revise Chemistry Chap 3" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ActionCard({ icon, title, desc, color, onClick }: { icon: React.ReactNode, title: string, desc: string, color: string, onClick: () => void }) {
+  const colors: Record<string, string> = {
+    blue: "bg-blue-50 text-blue-600 group-hover:bg-blue-600",
+    emerald: "bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600",
+    amber: "bg-amber-50 text-amber-600 group-hover:bg-amber-600",
+  };
+
+  const textColors: Record<string, string> = {
+    blue: "text-blue-600",
+    emerald: "text-emerald-600",
+    amber: "text-amber-600",
+  };
+
+  return (
+    <div 
+      onClick={onClick}
+      className="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-lg hover:shadow-blue-500/5 transition-all group cursor-pointer"
+    >
+      <div className={`size-12 rounded-xl flex items-center justify-center mb-4 group-hover:text-white transition-colors ${colors[color]}`}>
+        {icon}
+      </div>
+      <h3 className="font-bold text-lg mb-1">{title}</h3>
+      <p className="text-sm text-slate-500">{desc}</p>
+      <div className={`mt-4 flex items-center text-sm font-semibold gap-1 ${textColors[color]}`}>
+        Start <ArrowRight size={16} />
+      </div>
+    </div>
+  );
+}
+
+function RecentItem({ icon, title, meta, tag, tagColor }: { icon: React.ReactNode, title: string, meta: string, tag: string, tagColor: string }) {
+  const tagColors: Record<string, string> = {
+    blue: "bg-blue-50 text-blue-600",
+    amber: "bg-amber-50 text-amber-600",
+    emerald: "bg-emerald-50 text-emerald-600",
+  };
+
+  return (
+    <div className="bg-white p-4 rounded-xl border border-slate-200 flex items-start gap-4 hover:border-blue-200 transition-colors cursor-pointer group">
+      <div className="size-10 bg-slate-50 rounded-lg flex items-center justify-center text-slate-400 shrink-0 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
+        {icon}
+      </div>
+      <div className="flex-1">
+        <h4 className="font-semibold text-sm group-hover:text-blue-600 transition-colors">{title}</h4>
+        <p className="text-xs text-slate-400 mt-1">{meta}</p>
+      </div>
+      <span className={`px-2 py-1 text-[10px] font-bold rounded-full uppercase tracking-tighter shrink-0 ${tagColors[tagColor]}`}>
+        {tag}
+      </span>
+    </div>
+  );
+}
+
+function GoalItem({ text, done = false }: { text: string, done?: boolean }) {
+  return (
+    <div className="flex items-center gap-3">
+      <div className={`size-5 rounded border flex items-center justify-center transition-colors ${done ? "bg-blue-600 border-blue-600" : "border-slate-300"}`}>
+        {done && <CheckCircle2 size={14} className="text-white" />}
+      </div>
+      <p className={`text-sm ${done ? "text-slate-400 line-through" : "text-slate-600"}`}>{text}</p>
+    </div>
+  );
+}
